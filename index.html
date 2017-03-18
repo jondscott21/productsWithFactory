@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="UTF-8">
+  <title>Products with factory</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="materialize.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+  <script src='bower_components/angular/angular.js'></script>
+  <script type="text/javascript">
+    let myApp = angular.module('app', []);
+    myApp.factory('productFactory',[ function () {
+        let factory = {};
+        factory.products = [
+            {name: 'microwave', price:14.99},
+        ];
+        factory.create = function (product) {
+            if (product.price && product.name && Number(parseFloat(product.price)) == product.price){
+                factory.products.push(product);
+            }
+        };
+        factory.deleteProduct = function (obj) {
+
+            factory.products.splice(factory.products.indexOf(obj), 1);
+        };
+        factory.indexProduct = function (callback) {
+
+        };
+        return factory;
+    }]);
+    myApp.controller('productController', ['productFactory', function (productFactory) {
+        this.products = productFactory.products;
+        this.product = {};
+        this.create = function () {
+                productFactory.create(this.product);
+                this.product = null;
+        };
+        this.productDelete = function (obj) {
+            productFactory.deleteProduct(obj);
+        }
+    }]);
+  </script>
+</head>
+<body ng-controller="productController as PC">
+<div class="container">
+  <form">
+    <div class="input-field">
+      <input class="validate" id="name" type="text" ng-model="PC.product.name">
+      <label for="name">Name</label>
+    </div>
+    <div class="input-field">
+      <input class="validate" id="price" type="number" ng-model="PC.product.price">
+      <label for="price">Price</label>
+    </div>
+    <input type="submit" class="btn black right" value="Add Product" ng-click="PC.create()">
+  </form>
+  <table class="striped">
+    <thead>
+    <tr>
+      <th data-field="name">Name</th>
+      <th data-field="last_name">Price</th>
+      <th data-field="actions">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="product in PC.products | orderBy: 'price'">
+      <td ng-bind="product.name"></td>
+      <td ng-bind="product.price | currency"></td>
+      <td><input type="submit" class="btn red" value="Delete Product" ng-click="PC.productDelete(product)"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
